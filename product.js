@@ -45,7 +45,7 @@ const productSchema = mongoose.Schema({
   stock: {
     type: Number,
     required: true,
-    min: [0,'Stock tidak boleh kurang dari 0'],
+    min: [0, "Stock tidak boleh kurang dari 0"],
   },
   availability: {
     online: {
@@ -59,7 +59,22 @@ const productSchema = mongoose.Schema({
   },
 });
 
+productSchema.methods.outStock = function () {
+  this.stock = 0;
+  this.availability.online = false;
+  this.availability.offline = false;
+  return this.save();
+};
+
 const Product = mongoose.model("Product", productSchema);
+
+const changeStock = async (id) => {
+  const foundProduct = await Product.findById(id);
+  await foundProduct.outStock();
+  console.log("Berhasil Di Ubah");
+};
+
+changeStock("664b05ead8292c27ac96e001");
 
 // const tshirt = new Product({
 //   "name": "Kemeja Flanel",
@@ -85,30 +100,30 @@ const Product = mongoose.model("Product", productSchema);
 //     console.log(err);
 //   });
 
-Product.findOneAndUpdate(
-  {
-    name: "Kemeja Flanel",
-  },
-  {
-    name: "Kemeja Flanel",
-    brand: "Hollister",
-    price: 1500000,
-    color: "biru muda",
-    size: ["S", "M", "L"],
-    description:
-      "Kemeja flanel dengan warna yang cerah, terbuat dari bahan flanel yang nyaman dan berkualitas tinggi.",
-    condition: "Baru",
-    stock: -1,
-    availability: {
-      online: true,
-      offline: true,
-    },
-  },
-  { new: true , runValidators: true}
-)
-  .then((result) => {
-    console.log(result);
-  })
-  .catch((err) => {
-    console.log(err.errors.stock.properties.message);
-  });
+// Product.findOneAndUpdate(
+//   {
+//     name: "Kemeja Flanel",
+//   },
+//   {
+//     name: "Kemeja Flanel",
+//     brand: "Hollister",
+//     price: 1500000,
+//     color: "biru muda",
+//     size: ["S", "M", "L"],
+//     description:
+//       "Kemeja flanel dengan warna yang cerah, terbuat dari bahan flanel yang nyaman dan berkualitas tinggi.",
+//     condition: "Baru",
+//     stock: -1,
+//     availability: {
+//       online: true,
+//       offline: true,
+//     },
+//   },
+//   { new: true , runValidators: true}
+// )
+//   .then((result) => {
+//     console.log(result);
+//   })
+//   .catch((err) => {
+//     console.log(err.errors.stock.properties.message);
+//   });
