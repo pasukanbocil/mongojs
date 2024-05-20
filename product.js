@@ -65,6 +65,14 @@ productSchema.methods.outStock = function () {
   this.availability.offline = false;
   return this.save();
 };
+productSchema.statics.closeStore = function () {
+  return this.updateMany({},{
+    stock: 0,
+    "availability.online": false,
+    "availability.offline": false
+  })
+}
+
 
 const Product = mongoose.model("Product", productSchema);
 
@@ -74,7 +82,15 @@ const changeStock = async (id) => {
   console.log("Berhasil Di Ubah");
 };
 
-changeStock("664b05ead8292c27ac96e001");
+
+Product.closeStore().then((result) => {
+  console.log(result);
+}).catch((err) => {
+  console.log(err);
+});
+
+
+// changeStock("664b05ead8292c27ac96e001");
 
 // const tshirt = new Product({
 //   "name": "Kemeja Flanel",
